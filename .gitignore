@@ -184,5 +184,3 @@ cython_debug/
 
 # AI generated artifacts
 Models/
-Plots/
-Tables/
