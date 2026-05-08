@@ -48,7 +48,6 @@ def preprocess_data(df, target="RecommendationCount", task="regression", is_trai
         df[col] = df[col].map({True: 1, False: 0, "TRUE": 1, "FALSE": 0, "True": 1, "False": 0, 1: 1, 0: 0}).fillna(0).astype(int)
 
     # 2e. Numeric cols
-    from save_model import save_object, load_object
     numeric_cols = [
         "RequiredAge", "DemoCount", "DeveloperCount", "DLCCount", "Metacritic",
         "MovieCount", "PackageCount", "PublisherCount", "ScreenshotCount",
@@ -59,6 +58,7 @@ def preprocess_data(df, target="RecommendationCount", task="regression", is_trai
     ]
     numeric_cols = [c for c in numeric_cols if c in df.columns]
     
+    from save_model import save_object, load_object
     if is_train:
         num_imputer = SimpleImputer(strategy="median")
         if numeric_cols:
@@ -77,7 +77,7 @@ def preprocess_data(df, target="RecommendationCount", task="regression", is_trai
         else:
             df[target] = df[target].fillna(df[target].mode()[0])
 
-    # 2g. IQR cap
+    # 2g. IQR cap remove outliers
     for col in numeric_cols:
         if col == target: continue
         Q1, Q3 = df[col].quantile(0.25), df[col].quantile(0.75)
@@ -85,7 +85,7 @@ def preprocess_data(df, target="RecommendationCount", task="regression", is_trai
         lo, hi = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
         df[col] = df[col].clip(lo, hi)
 
-    # 2h. Log1p transform
+    # 2h. Log1p transform normalize skewed data
     skew_cols = [
         "SteamSpyOwners", "SteamSpyOwnersVariance",
         "SteamSpyPlayersEstimate", "SteamSpyPlayersVariance"

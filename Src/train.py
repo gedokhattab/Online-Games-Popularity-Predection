@@ -48,7 +48,7 @@ def save_df_as_table_png(df, filename, title):
     plt.savefig(filename, dpi=200, bbox_inches='tight')
     plt.close()
 
-from colors import GREEN, BLUE, ORANGE, RED, RESET, BOLD
+from colors import GREEN, BLUE, RESET, BOLD
 
 def run_pipeline(task, train_file, target):
     print(f"\n{BLUE}{BOLD}" + "=" * 40)

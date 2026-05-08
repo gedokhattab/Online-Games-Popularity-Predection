@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -38,19 +38,47 @@ def train_and_evaluate_classification_models(X, y):
     results = []
     preds_test = {}
 
+    param_grids = {
+        "Logistic Regression": {
+            "C": [0.1, 1.0, 10.0]
+        },
+        "Random Forest Classifier": {
+            "n_estimators": [100, 200, 300],
+            "max_depth": [5, 10, 15],
+            "min_samples_leaf": [1, 2, 5]
+        },
+        "Gradient Boosting Classifier": {
+            "n_estimators": [100, 200, 300],
+            "learning_rate": [0.01, 0.05, 0.1],
+            "max_depth": [3, 5, 7]
+        }
+    }
+
     models = {
         "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
-        "Random Forest Classifier": RandomForestClassifier(n_estimators=200, max_depth=12, min_samples_leaf=5, random_state=42, n_jobs=-1),
-        "Gradient Boosting Classifier": GradientBoostingClassifier(n_estimators=300, learning_rate=0.05, max_depth=5, subsample=0.8, random_state=42)
+        "Random Forest Classifier": RandomForestClassifier(random_state=42, n_jobs=-1),
+        "Gradient Boosting Classifier": GradientBoostingClassifier(random_state=42)
     }
 
     for name, model in models.items():
-        print(f"\n--- Model: {name} ---")
+        print(f"\n--- Tuning & Training: {name} ---")
         train_start = time.time()
         
+        # Use GridSearchCV for all models
+        grid_search = GridSearchCV(
+            estimator=model,
+            param_grid=param_grids[name],
+            cv=3,
+            scoring='accuracy',
+            n_jobs=-1
+        )
+        
         if name in ["Logistic Regression"]:
-            model.fit(X_train_sc, y_train)
+            grid_search.fit(X_train_sc, y_train)
             train_end = time.time()
+            model = grid_search.best_estimator_
+            print(f"    Best Params: {grid_search.best_params_}")
+            
             evaluate_classification(name, y_val, model.predict(X_val_sc), "Validation")
             
             test_start = time.time()
@@ -60,8 +88,11 @@ def train_and_evaluate_classification_models(X, y):
             acc, prec, rec, f1 = evaluate_classification(name, y_test, y_pred_test, "Test")
             preds_test[name] = y_pred_test
         else:
-            model.fit(X_train, y_train)
+            grid_search.fit(X_train, y_train)
             train_end = time.time()
+            model = grid_search.best_estimator_
+            print(f"    Best Params: {grid_search.best_params_}")
+            
             evaluate_classification(name, y_val, model.predict(X_val), "Validation")
             
             test_start = time.time()
