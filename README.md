@@ -54,7 +54,7 @@ All artifacts are saved under `Models/`, visualizations under `Plots/`, and tabl
 Edit colour definitions in `Src/colors.py` if you want a different theme.
 
 ## License
-This project is **unlicensed** – you may not use, modify, or distribute it without permission.
+This project is **unlicensed** – you may not modify, or distribute it without permission.
 
 ## Authors
 - Khattab Mohamed
