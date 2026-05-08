@@ -13,6 +13,9 @@ import numpy as np
 from preprocessing import load_data, preprocess_data
 from feature_engineering import select_features
 from save_model import load_object
+from regression_model_training import evaluate as evaluate_regression
+from classification_model_training import evaluate_classification
+
 
 def test_pipeline(test_file=None, task=None):
     print("=" * 60)
@@ -109,6 +112,18 @@ def test_pipeline(test_file=None, task=None):
     except Exception as e:
         print(f"Error loading models or predicting: {e}")
         return
+
+    if target_col in df_preprocessed.columns:
+        print(f"\n[4.5] EVALUATING AGAINST GROUND TRUTH ('{target_col}')")
+        y_true = df_preprocessed[target_col]
+        
+        for m_name, preds in predictions.items():
+            print(f"\n  Model: {m_name}")
+            if task == "regression":
+                y_true_raw = np.expm1(y_true)
+                evaluate_regression(m_name, y_true_raw, preds, subset="Unseen Test")
+            else:
+                evaluate_classification(m_name, y_true, preds, subset="Unseen Test")
 
     print("\n[5] SAVING PREDICTIONS")
     # Save predictions to a CSV
