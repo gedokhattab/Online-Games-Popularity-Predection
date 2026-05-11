@@ -57,16 +57,19 @@ def run_pipeline(task, train_file, target):
     
     # 1. LOAD DATA
     print(f"\n{BLUE}[1] LOADING DATA{RESET}")
-    train = load_data(train_file, "Datasets/idlist.csv")
-    print(f"Train shape  : {train.shape}")
+    train_df, test_df = load_data(train_file, "Datasets/idlist.csv")
+    print(f"Train shape  : {train_df.shape}")
+    print(f"Test shape   : {test_df.shape}")
     
     # 2. PREPROCESSING
     print(f"\n{BLUE}[2] PREPROCESSING{RESET}")
-    df, all_features = preprocess_data(train, target=target, task=task)
+    df_train, all_features = preprocess_data(train_df, target=target, task=task, is_train=True)
+    df_test, _ = preprocess_data(test_df, target=target, task=task, is_train=False)
     
     # 3. FEATURE SELECTION
     print(f"\n{BLUE}[3] FEATURE SELECTION{RESET}")
-    X_sel, y, selected_features, scores_df = select_features(df, all_features, target=target, task=task)
+    X_train_sel, y_train, selected_features, scores_df = select_features(df_train, all_features, target=target, task=task, is_train=True)
+    X_test_sel, y_test, _, _ = select_features(df_test, all_features, target=target, task=task, is_train=False)
     
     
     plt.figure(figsize=(10, 7))
@@ -88,9 +91,9 @@ def run_pipeline(task, train_file, target):
     # 4. MODEL TRAINING
     print(f"\n{BLUE}[4] MODEL TRAINING & EVALUATION{RESET}")
     if task == "regression":
-        results_df, preds_test, y_test = run_regression(X_sel, y)
+        results_df, preds_test, y_test = run_regression(X_train_sel, y_train, X_test_sel, y_test)
     else:
-        results_df, preds_test, y_test = run_classification(X_sel, y)
+        results_df, preds_test, y_test = run_classification(X_train_sel, y_train, X_test_sel, y_test)
         
     print("\nRESULTS SUMMARY — Test Set")
     print(results_df.to_string(index=False))

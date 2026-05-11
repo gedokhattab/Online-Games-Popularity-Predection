@@ -19,10 +19,11 @@ def select_features(df, features, target="RecommendationCount", task="regression
                       .sort_values("F_Score", ascending=False)
     else:
         selector = load_object(f"Models/{task}/Selector.pkl")
-        y = None
+        y = df[target].copy() if target in df.columns else None
         scores_df = None
         
     selected_features = X.columns[selector.get_support()].tolist()
-    print(f"  Selected top {len(selected_features)} features.")
+    if is_train:
+        print(f"  Selected top {len(selected_features)} features.")
                   
     return X[selected_features], y, selected_features, scores_df

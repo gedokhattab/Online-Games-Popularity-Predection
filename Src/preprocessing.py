@@ -3,11 +3,14 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 
 def load_data(train_path="Datasets/regression_train_data.csv", idlist_path="Datasets/idlist.csv"):
+    from sklearn.model_selection import train_test_split
     train = pd.read_csv(train_path)
     idlist = pd.read_csv(idlist_path)
     idlist.columns = idlist.columns.str.strip()
     train = train.merge(idlist, left_on="QueryID", right_on="ID", how="left")
-    return train
+    
+    train_df, test_df = train_test_split(train, test_size=0.15, random_state=42)
+    return train_df, test_df
 
 def preprocess_data(df, target="RecommendationCount", task="regression", is_train=True):
     # 2a. Drop text

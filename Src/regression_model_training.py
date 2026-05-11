@@ -17,11 +17,9 @@ def evaluate(name, y_true, y_pred, subset="Test"):
     print(f"    [{subset}] MAE: {mae:.3f} | RMSE: {rmse:.3f} | R2: {r2:.3f}")
     return mae, rmse, r2
 
-def train_and_evaluate_models(X, y):
-    X_tr_full, X_test, y_tr_full, y_test = train_test_split(
-        X, y, test_size=0.15, random_state=42)
+def train_and_evaluate_models(X_train_full, y_train_full, X_test, y_test):
     X_train, X_val, y_train, y_val = train_test_split(
-        X_tr_full, y_tr_full, test_size=0.15 / 0.85, random_state=42)
+        X_train_full, y_train_full, test_size=0.15 / 0.85, random_state=42)
 
     print(f"  Training set   : {X_train.shape[0]:,} rows  (~70%)")
     print(f"  Validation set : {X_val.shape[0]:,} rows  (~15%)")

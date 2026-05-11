@@ -18,11 +18,9 @@ def evaluate_classification(name, y_true, y_pred, subset="Test"):
     print(f"    [{subset}] Acc: {acc:.4f} | Prec: {prec:.4f} | Rec: {rec:.4f} | F1: {f1:.4f}{RESET}")
     return acc, prec, rec, f1
 
-def train_and_evaluate_classification_models(X, y):
-    X_tr_full, X_test, y_tr_full, y_test = train_test_split(
-        X, y, test_size=0.15, random_state=42)
+def train_and_evaluate_classification_models(X_train_full, y_train_full, X_test, y_test):
     X_train, X_val, y_train, y_val = train_test_split(
-        X_tr_full, y_tr_full, test_size=0.15 / 0.85, random_state=42)
+        X_train_full, y_train_full, test_size=0.15 / 0.85, random_state=42)
 
     print(f"  Training set   : {X_train.shape[0]:,} rows  (~70%){RESET}")
     print(f"  Validation set : {X_val.shape[0]:,} rows  (~15%){RESET}")
